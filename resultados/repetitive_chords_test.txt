@@ -1,0 +1,29 @@
+Recognition test with chord sol niter: 11
+G/D;G/D;G/D;G/D;G/D;G/D;G/D;G/D;G/D;G/D;G/D
+
+Recognition test with chord sol_5casa niter: 11
+G;G;G;G;G;G;G;G;G;G;G
+
+Recognition test with chord sol_pestana_3casa niter: 11
+G;G;G;G;G;G;G;G;G;G;G
+
+Recognition test with chord sol_pestana_10casa niter: 11
+G/B;G/B;G/B;G/B;G/B;G/B;G/B;G/B;G/B;G/B;G/B
+
+Recognition test with chord sol_quinta niter: 11
+G;G;G;G;G;G;G;G;G;G;G
+
+Recognition test with chord sol niter: 21
+G/D;G/D;G/D;G/D;G/D;G/D;G/D;G/D;G/D;G/D;G/D;G/D;G/D;G/D;G/D;G/D;G/D;G/D;G/D;G/D;G/D
+
+Recognition test with chord sol_5casa niter: 21
+G;G;G;G;G;G;G;G;G;G;G;G;G;G;G;G;G;G;G;G;G
+
+Recognition test with chord sol_pestana_3casa niter: 21
+G;G;G;G;G;G;G;G;G;G;G;G;G;G;G;G;G;G;G;G;G
+
+Recognition test with chord sol_pestana_10casa niter: 21
+G/B;G/B;G/B;G/B;G/B;G/B;G/B;G/B;G/B;G/B;G/B;G/B;G/B;G/B;G/B;G/B;G/B;G/B;G/B;G/B;G/B
+
+Recognition test with chord sol_quinta niter: 21
+G;G;G;G;G;G;G;G;G;G;G;G;G;G;G;G;G;G;G;G;G
