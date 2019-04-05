@@ -19,3 +19,6 @@
 *.brf
 *.toc
 *.idx
+
+#Python
+*.pyc
