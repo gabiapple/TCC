@@ -13,18 +13,17 @@ def plot(x, y):
 def get_fft(filepath):
     fs, data = wavfile.read(filepath)
     fourier  = fft(data)
-    fa = round(fs/2)
-    freq = fftfreq(fa, d=1/fa)
+    fa = round(fs*2)
+    freq = abs(fftfreq(fa, d=1/fa))
 
     fourier = abs(fourier)
     fourier = fourier/max(fourier)
     fourier = fourier[:fa]
 
-    print(fourier)
-    plot(freq, fourier)
+    #plot(freq, fourier)
+    plot(freq[0:1000], fourier[0:1000])
 
     return fs, freq, fourier
-
 
 
 def main(args):
