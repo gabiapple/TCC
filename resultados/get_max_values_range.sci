@@ -1,8 +1,8 @@
 function [maximus, maximus2, maximus2val] = get_max_values_range(data, step, fstart, N)
     j=1;
     k=1;
-    start_f = 5;
-    end_f = 335;
+    start_f = 125;
+    end_f = 250;
     for i=fstart:step:N
         [maximum, index] = max(data(i:i+step-1));
         f = index + i - 1;
