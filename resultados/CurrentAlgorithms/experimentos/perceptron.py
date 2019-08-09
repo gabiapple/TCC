@@ -24,7 +24,7 @@ class Perceptron:
         if (df == 1):
             return [0, 1]
 
-        if (df == 2):
+        if (df == 3):
             return [1, 0]
 
 
@@ -83,7 +83,7 @@ class Perceptron:
         self.W = W
         self.b = b
 
-#        print("Corretude: " + str((float(corretos)/self.T)*100))
+        print("Corretude: " + str((float(corretos)/self.T)*100))
 #        plt.plot(E)
 #        plt.show()
 
@@ -92,7 +92,7 @@ class Perceptron:
         if result.equals(pd.Series([0, 1])):
             print("Acorde G")
         elif result.equals(pd.Series([1, 0])):
-            print("Acorde A")
+            print("Acorde G#")
 
                     
 
