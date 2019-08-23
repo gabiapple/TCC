@@ -2,8 +2,8 @@ function [maximus, maximus2, maximus2val] = get_max_values_range(data, step, fst
     j=1;
     k=1;
     start_f = 125;
-    end_f = 250;
-    for i=fstart:step:N
+    end_f = 255;
+    for i=fstart:step:N-step
         [maximum, index] = max(data(i:i+step-1));
         f = index + i - 1;
          if f < start_f
@@ -12,7 +12,7 @@ function [maximus, maximus2, maximus2val] = get_max_values_range(data, step, fst
                 cof = cof + 1;
             end
             newf = round(f*cof);
-            maximus2(k) = f;
+            maximus2(k) = newf;
             maximus2val(k) = data(f);
             k = k + 1;
         elseif i > end_f
@@ -22,6 +22,10 @@ function [maximus, maximus2, maximus2val] = get_max_values_range(data, step, fst
             end
             newf = round(f/cof);
             maximus2(k) = newf;
+            maximus2val(k) = data(f);
+            k = k + 1;
+        else
+            maximus2(k) = f;
             maximus2val(k) = data(f);
             k = k + 1;
         end
