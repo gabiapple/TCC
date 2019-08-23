@@ -21,12 +21,45 @@ class Perceptron:
         self.saida = pd.DataFrame(self.saida.apply(self.transformar).values.tolist())
 
     def transformar(self, df):
-        if (df == 1):
+        #if(df == 1):
+        #    return [0, 0, 0, 1]
+
+        #if(df == 2):
+        #    return [0, 0, 1, 0]
+
+        #if(df == 3):
+        #    return [0, 0, 1, 1]
+
+        #if(df == 4):
+        #    return [0, 1, 0, 0]
+
+        #if(df == 5):
+        #    return [0, 1, 0, 1]
+
+        #if(df == 6):
+        #    return [0, 1, 1, 0]
+
+        #if(df == 7):
+        #    return [0, 1, 1, 1]
+
+        if(df == 8):
             return [0, 1]
+        #    return [1, 0, 0, 0]
 
-        if (df == 3):
-            return [1, 0]
+       # if(df == 9):
+       #     return [1, 0, 0, 1]
 
+        #if(df == 10):
+        #    return [1, 0, 1, 0]
+
+        #if(df == 11):
+        #    return [1, 0, 1, 1]
+
+        if(df == 12):
+            return [1, 1]
+        #    return [1, 1, 0, 0]
+
+        return [0, 0]
 
     def normalizar(self):
         pass
@@ -84,15 +117,17 @@ class Perceptron:
         self.b = b
 
         print("Corretude: " + str((float(corretos)/self.T)*100))
-#        plt.plot(E)
-#        plt.show()
+       # plt.plot(E)
+       # plt.show()
 
     def get_nota(self, entrada):
         result = self.W.dot(entrada).add(self.b).apply(self.degrau)
-        if result.equals(pd.Series([0, 1])):
+        if result.equals(pd.Series([1, 0, 0, 0])):
             print("Acorde G")
-        elif result.equals(pd.Series([1, 0])):
-            print("Acorde G#")
+        elif result.equals(pd.Series([1, 1, 0, 0])):
+            print("Acorde Si")
+        else:
+            print("Nao reconhecido")
 
                     
 
