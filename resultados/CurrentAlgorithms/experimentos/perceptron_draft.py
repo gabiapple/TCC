@@ -248,17 +248,13 @@ def teste_5(niter):
     """Testando apenas para um acorde: G"""
     corretudes = []
     corretudes_validacao = []
-    acordes_nao_sol = [
-        [10, 220,221,166,222,248,330,167,209,222, 10],
-        [11, 147,221,148,221,233,296,187,192,221, 3],
-        [12, 248,247,166,209,249,332,166,206,216, 5]
-    ]
-    for i in range(1):
-        p = Perceptron('Sol.csv', 1, add_conjunto_teste=True, conjunto_teste=acordes_nao_sol)
+    for i in range(niter):
+        p = Perceptron('TmpDataSets/Sol_misto.csv', 1)
         print("Matriz de confusao", p.avaliacao.mat_confusao)
         print("Acuracia", p.avaliacao.acuracia)
         print("Precisao", p.avaliacao.precisao)
         print("Revocacao", p.avaliacao.revocacao)
+    
         # print(p.avaliacao.mat_confusao, p.avaliacao.acuracia, p.avaliacao.precisao, p.avaliacao.revocacao)
         corretudes.append(p.corretude)
     #     corretudes_validacao.append(p.corretude_validacao)
@@ -273,9 +269,9 @@ def teste_5(niter):
     #     p.validar(acordes_nao_sol)
     #     corretudes_validacao.append(p.corretude_validacao)
     # print(corretudes_validacao)
-    # filename = 'teste5_Sol_teste_naoSol.png'
-    # title = r'Histograma da execução do algoritmo para G e teste com acordes que nao sao G, $N=20$'
-    # save_hist(filename, title, corretudes)
+    filename = 'teste6_Sol_misto.png'
+    title = r'Histograma da execução do algoritmo para G e teste com acordes que nao sao G, $N=20$'
+    save_hist(filename, title, corretudes)
 
     return corretudes
     
