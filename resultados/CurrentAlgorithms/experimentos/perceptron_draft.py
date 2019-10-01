@@ -14,7 +14,7 @@ class Perceptron:
         self.get_acorde[tuple(0 for i in range(self.N))] = "Nao reconhecido"
         self.embaralhar()
         self.separar_entrada_saida()
-        self.separar_conjuntos()
+        self.separar_conjuntos_novo()
         if add_conjunto_teste:
             self.adicionar_conjunto_teste(conjunto_teste)
         self.perceptron()
@@ -28,15 +28,37 @@ class Perceptron:
         self.saida = pd.DataFrame(self.saida.apply(self.transformar).values.tolist())
 
     def transformar(self, df):
+        if self.N == 1:
+            if df == 8:
+                return 1
+            return 0
+            
         # data = [0 for i in range(self.N)]
         # data[df - 1] = 1
         # self.get_acorde[tuple(data)] = Perceptron.acordes[df - 1]
 
-        if df != 8:
+        if df == 8:
+            return [1, 0]
+        
+        return [0, 1]
+ 
+        # return data
+
+    def inv_transformar(self, df):
+        if self.N == 1:
+            if df == 1:
+                return 0
+            return 1
+            
+        # data = [0 for i in range(self.N)]
+        # data[df - 1] = 1
+        # self.get_acorde[tuple(data)] = Perceptron.acordes[df - 1]
+
+        if df.values.tolist() == [1,0]:
             return 0
         
         return 1
-
+ 
         # return data
 
     def normalizar(self):
@@ -53,6 +75,37 @@ class Perceptron:
         
         self.conjunto_treino_entrada = self.entrada[length_slice:]
         self.conjunto_treino_saida = self.saida[length_slice:]
+
+    def separar_conjuntos_novo(self):
+        tam = len(self.entrada)
+        length_slice = int(round(tam / 3))
+        self.T = length_slice #Numero de itens para teste
+        self.M = tam - length_slice #Numero de itens para treinamento
+        # col_classe = self.saida.columns[-1]
+        classes = self.saida.drop_duplicates().values.tolist()
+        num_classes = len(classes)
+        itens_por_classe = int(self.T / num_classes)
+        # self.conjunto_teste_entrada
+        instancias_id = []
+
+        for classe in classes:
+            instancias = self.saida[self.saida == classe].dropna()
+            instancias_id.extend(instancias.sample(n=int(itens_por_classe)).index.to_list())
+
+        if len(instancias_id) < self.T:
+            instancias_id.append(self.saida[~self.saida.index.isin(instancias_id)] 
+                .sample(n=1).index.values[0])
+        
+        # conjunto_teste_entrada.loc[instancias.sample(n=int(itens_por_classe)).index]
+
+        # cols_atributos = [i for i in range(1, self.A+1)]
+
+        self.conjunto_teste_entrada = pd.DataFrame(self.entrada.loc[instancias_id].values)
+        self.conjunto_teste_saida = pd.DataFrame(self.saida.loc[instancias_id].values)
+        
+        self.conjunto_treino_entrada = pd.DataFrame(self.entrada.loc[~self.df.index.isin(instancias_id)].values)
+        self.conjunto_treino_saida = pd.DataFrame(self.saida.loc[~self.df.index.isin(instancias_id)].values)
+
 
     def adicionar_conjunto_teste(self, conjunto):
         df = pd.DataFrame(conjunto)
@@ -89,7 +142,6 @@ class Perceptron:
 
         while (t < max_it):    
             for i in range(self.M):
-                # import pdb; pdb.set_trace()
                 y = W.dot(self.conjunto_treino_entrada.iloc[i]).add(b).apply(self.degrau)
                 e = D.iloc[i].subtract(y)
                 E.iloc[t] += e.dot(e.T)
@@ -107,18 +159,21 @@ class Perceptron:
               
             if y.equals(self.conjunto_teste_saida.iloc[i]):
                 corretos += 1
-
-            predict_y.append(y[0])
-            real_y.append(self.conjunto_teste_saida.iloc[i][0])
+            predict_y.append(y.tolist())
+            real_y.append(self.conjunto_teste_saida.iloc[i].tolist())
 
             # acorde_teste_y = self.get_acorde.get(tuple(self.conjunto_teste_saida.iloc[i]), 'Nao reconhecido')
             # acorde_predict_y = self.get_acorde.get(tuple(y), 'Nao reconhecido')
            
             # teste_y.append(acorde_teste_y)
             # predict_y.append(acorde_predict_y)
-
+        predict_y = pd.DataFrame(predict_y).apply(self.inv_transformar, axis=1).values.tolist()
+        real_y = pd.DataFrame(real_y).apply(self.inv_transformar, axis=1).values.tolist()
+        # import pdb; pdb.set_trace()
+       
         self.avaliacao = Resultado(np.asarray(real_y), np.asarray(predict_y))
-
+        self.mat_confusao = self.avaliacao.mat_confusao
+        
         self.W = W
         self.b = b
 
@@ -195,82 +250,104 @@ def save_hist(filename, title, results):
 def teste_1(niter):
     """Testando acordes com sobreposicao de 1 nota: G e D"""
     print("Testando acordes com sobreposicao de 1 nota: G e D")
-    # corretudes = []
-    # for i in range(niter):
-    #     p = Perceptron('Sol_Re.csv', 2)
-    #     corretudes.append(p.corretude)
-    # corretudes = [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 83.33333333333334, 100.0, 100.0, 100.0, 83.33333333333334, 100.0, 100.0, 100.0, 100.0, 100.0]
-    # filename = 'teste1_Sol_Re.png'
-    # title = r'Histograma da execução do algoritmo para G e D, $N=20$'
-    # save_hist(filename, title, corretudes)
+    corretudes = []
+    mat_confusao = []
+    csv_name = "teste1.csv"
+    write_csv(csv_name, [["NITERACOES", str(niter)]])
+    for i in range(niter):
+        p = Perceptron('TmpDataSets/sol_re_9attr_ordenado.csv', 2)
+        mat_confusao.append(p.mat_confusao)
+        corretudes.append(p.corretude)
+        write_csv(csv_name, [["iter", i]])
+        write_csv(csv_name, [["Sol", "Re"]])
+        write_csv(csv_name, p.mat_confusao)
+        write_csv(csv_name, [["Corretude", str(p.corretude)]])
+    # print(corretudes)
+    filename = 'teste1_Sol_Re_igualmente_distribuido.png'
+    title = r'Histograma da execução do algoritmo com teste distribuido para G e D, $N=20$'
+    save_hist(filename, title, corretudes)
     return corretudes
 
 def teste_2(niter):   
     """Testando acordes com sobreposicao de 2 notas: G e B"""
     print("Testando acordes com sobreposicao de 2 notas: G e B")
-    # corretudes = []
-    # for i in range(niter):
-    #     p = Perceptron('Sol_Si.csv', 2)
-    #     corretudes.append(p.corretude)
-    corretudes = [100.0, 100.0, 66.66666666666666, 83.33333333333334, 83.33333333333334, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 83.33333333333334, 100.0, 100.0, 83.33333333333334, 100.0, 100.0, 100.0, 100.0, 100.0]
-    filename = 'teste2_Sol_Si.png'
-    title = r'Histograma da execução do algoritmo para G e B, $N=20$'
+    corretudes = []
+    mat_confusao = []
+    csv_name = "teste2.csv"
+    write_csv(csv_name, [["NITERACOES", str(niter)]])
+    for i in range(niter):
+        p = Perceptron('TmpDataSets/sol_si_9attr_ordenado.csv', 2)
+        mat_confusao.append(p.mat_confusao)
+        corretudes.append(p.corretude)
+        write_csv(csv_name, [["iter", i]])
+        write_csv(csv_name, [["Sol", "Si"]])
+        write_csv(csv_name, p.mat_confusao)
+        write_csv(csv_name, [["Corretude", str(p.corretude)]])
+    print(corretudes)
+    filename = 'teste2_Sol_Si_igualmente_distribuido.png'
+    title = r'Histograma da execução do algoritmo com teste distribuido para G e B, $N=20$'
     save_hist(filename, title, corretudes)
     return corretudes
 
 def teste_3(niter):   
     """Testando acordes com diferenca de 1 semiton: G e G#"""
     print("Testando acordes com diferenca de 1 semiton: G e G#")
-    # corretudes = []
-    # for i in range(niter):
-    #     p = Perceptron('Sol_Sol#.csv', 2)
-    #     corretudes.append(p.corretude)
-    corretudes = [66.66666666666666, 83.33333333333334, 100.0, 100.0, 83.33333333333334, 83.33333333333334, 83.33333333333334, 100.0, 100.0, 100.0, 83.33333333333334, 100.0, 100.0, 50.0, 83.33333333333334, 83.33333333333334, 100.0, 100.0, 83.33333333333334, 83.33333333333334]
-    filename = 'teste3_Sol_Sol#.png'
-    title = r'Histograma da execução do algoritmo para G e G#, $N=20$'
+    corretudes = []
+    mat_confusao = []
+    csv_name = "teste3.csv"
+    write_csv(csv_name, [["NITERACOES", str(niter)]])
+    for i in range(niter):
+        p = Perceptron('TmpDataSets/sol_sol#_9attr_ordenado.csv', 2)
+        mat_confusao.append(p.mat_confusao)
+        corretudes.append(p.corretude)
+        write_csv(csv_name, [["iter", i]])
+        write_csv(csv_name, [["Sol", "Sol#"]])
+        write_csv(csv_name, p.mat_confusao)
+        write_csv(csv_name, [["Corretude", str(p.corretude)]])
+    print(corretudes)
+    filename = 'teste3_Sol_Sol#_igualmente_distribuido.png'
+    title = r'Histograma da execução do algoritmo com teste distribuido para G e G#, $N=20$'
     save_hist(filename, title, corretudes)
     return corretudes
 
 def teste_4(niter): 
     """Testando acordes com diferenca de 1 tom: G e A"""
     print("Testando acordes com diferenca de 1 tom: G e A")
-    # corretudes = []
-    # for i in range(niter):
-    #     p = Perceptron('Sol_La.csv', 2)
-    #     corretudes.append(p.corretude)
-    corretudes = [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 66.66666666666666, 100.0, 100.0, 100.0, 100.0, 83.33333333333334, 100.0, 100.0, 83.33333333333334, 100.0, 66.66666666666666, 100.0]
-    filename = 'teste4_Sol_La.png'
-    title = r'Histograma da execução do algoritmo para G e A, $N=20$'
+    corretudes = []
+    mat_confusao = []
+    csv_name = "teste4.csv"
+    write_csv(csv_name, [["NITERACOES", str(niter)]])
+    for i in range(niter):
+        p = Perceptron('TmpDataSets/sol_la_9attr_ordenado.csv', 2)
+        mat_confusao.append(p.mat_confusao)
+        corretudes.append(p.corretude)
+        write_csv(csv_name, [["iter", i]])
+        write_csv(csv_name, [["Sol", "La"]])
+        write_csv(csv_name, p.mat_confusao)
+        write_csv(csv_name, [["Corretude", str(p.corretude)]])
+    print(corretudes)
+    filename = 'teste4_Sol_La_igualmente_distribuido.png'
+    title = r'Histograma da execução do algoritmo com teste igualmente distribuido para G e A, $N=20$'
     save_hist(filename, title, corretudes)
     return corretudes
 
 def teste_5(niter):
     """Testando apenas para um acorde: G"""
     corretudes = []
-    corretudes_validacao = []
+    mat_confusao = []
+    csv_name = "teste5.csv"
+    write_csv(csv_name, [["NITERACOES", str(niter)]])
     for i in range(niter):
-        p = Perceptron('TmpDataSets/Sol_misto.csv', 1)
-        print("Matriz de confusao", p.avaliacao.mat_confusao)
-        print("Acuracia", p.avaliacao.acuracia)
-        print("Precisao", p.avaliacao.precisao)
-        print("Revocacao", p.avaliacao.revocacao)
-    
-        # print(p.avaliacao.mat_confusao, p.avaliacao.acuracia, p.avaliacao.precisao, p.avaliacao.revocacao)
+        p = Perceptron('TmpDataSets/sol_misto_ordenado.csv', 1)
+        mat_confusao.append(p.mat_confusao)
         corretudes.append(p.corretude)
-    #     corretudes_validacao.append(p.corretude_validacao)
-    # print(corretudes, corretudes_validacao)
-    # filename = 'teste5_Sol_treino_teste_mesmo_acorde.png'
-    # title = r'Histograma da execução do algoritmo para G, treino e teste apenas com G, $N=20$'
-    # save_hist(filename, title, corretudes)
-    # corretudes = [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0]
-    # corretudes_validacao = []
-    # for i in range(niter):
-    #     p = Perceptron('Sol.csv', 1)
-    #     p.validar(acordes_nao_sol)
-    #     corretudes_validacao.append(p.corretude_validacao)
-    # print(corretudes_validacao)
-    filename = 'teste6_Sol_misto.png'
-    title = r'Histograma da execução do algoritmo para G e teste com acordes que nao sao G, $N=20$'
+        write_csv(csv_name, [["iter", i]])
+        write_csv(csv_name, [["Sol", "NaoSol"]])
+        write_csv(csv_name, p.mat_confusao)
+        write_csv(csv_name, [["Corretude", str(p.corretude)]])
+    print(corretudes)
+    filename = 'teste5_Sol_misto_igualmente_distribuido.png'
+    title = r'Histograma da execução do algoritmo com teste distribuido para G e teste com acordes que nao sao G, $N=20$'
     save_hist(filename, title, corretudes)
 
     return corretudes
@@ -281,21 +358,21 @@ def teste_5(niter):
 # for i in range(1, NITER):
 #     results[0].append("Iteracao {}".format(str(i)))
 
-# results.append(["teste_1"])
+# results.append(["teste_1_ordenado"])
 # results[-1].extend(teste_1(NITER))
-# results.append(["teste_2"])
+# results.append(["teste_2_ordenado"])
 # results[-1].extend(teste_2(NITER))
-# results.append(["teste_3"])
+# results.append(["teste_3_ordenado"])
 # results[-1].extend(teste_3(NITER))
-# results.append(["teste_4"])
+# results.append(["teste_4_ordenado"])
 # results[-1].extend(teste_4(NITER))
 
-results = ["teste_5"]
-corretudes, corretudes_validacao = teste_5(NITER)
-print(corretudes, corretudes_validacao)
+# results = ["teste_5"]
+# corretudes, corretudes_validacao = teste_5(NITER)
+# print(corretudes, corretudes_validacao)
 # results.extend(teste_5(NITER))
 # print(results)
-# write_csv("results.csv", [results])
+# write_csv("results_9attr_dataset_ordenado.csv", [results])
 # results.extend([100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100])
 # print(results)
 # write_csv("results.csv", [results])
@@ -312,3 +389,5 @@ print(corretudes, corretudes_validacao)
 # p = Perceptron('~/projects/TCC/resultados/CurrentAlgorithms/Datasets/acordesMaiores.csv', 12)
 # avaliar_resultado = Resultado()
 
+# p = Perceptron('TmpDataSets/sol_re_9attr_ordenado.csv', 2)
+teste_5(NITER)
