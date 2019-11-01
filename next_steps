@@ -1,0 +1,53 @@
+Testes:
+
+Passo 2 - falta os acordes menores
+5-Gerar datasets para todos os 12 acordes maiores e menores
+
+
+Passo 3 
+- Treinar a rede só com G e dizer se é G quando o acorde apresentado é G ou não caso contrário (só falta validar esse caso)
+- Treinar a rede com vários acordes diferentes e dizer se é G quando o acorde apresentado é G ou não caso contrário
+- Verificar a arquitetura de rede que estou utilizando
+- Repetir os experimentos aumentando o numero de instancias de acordes diferentes de G 
+
+FIZ ATE AQUI!!!!!!!!!!!!!!!!!!! 24/09/2019
+
+
+1. Forçar conjunto de treinamento e teste a ser igualmente distribuído (qtd de sols = qtd de re)
+	- Treinamento: 6 sols e 6 res
+	- Validação: 3 sols e 3 res
+	* escolhidos aleatoriamente
+
+FIZ ATE AQUI!!!!!!!!!!!!!!!!!!!!! 01/10/2019
+
+Proximo encontro: 04/10
+
+2. Selecionar as caracteristicas (por exemplo: ordernar as frequencias e iterar variando o numero de atributos, remover duplicadas, gerar os histogramas para cada conjunto de caracteristicas distinta)
+	- Variar de 2 a 9
+- usar um pacote para mesma topologia
+- testar outras topologias
+- Olhar como representar graficamente os falsos positivos/falsos negativos, etc (matriz de confusao)
+3. Replicar os histogramas
+- Gerar os histogramas por acorde (2 histogramas -> geral e 
+
+4. Ajustar histogramas: escala, centralização das barras, retirar titulo (colocar um identificador mais breve, se necessario)
+
+Fazer com N execuções:
+
+	- Fazer o histograma por saída para ver as acuracias dos acordes distintos
+		-> Fazer percentual por acorde (12 histogramas)
+
+	- Fazer o histograma de total de acertos (geral)
+		-> Olhar numero de acertos e numeros de erros
+
+	- Testar com um acorde distinto dos acordes esperados para verificar se nenhuma das saídas foi ativada (Ex: acorde diminuto)
+
+----------- Data: 04/10
+
+Passo 4
+- 12 redes em paralelo cada uma com uma saída
+- 12 neuronios com entradas de todos para todos
+- Uma rede com 1 saída
+
+
+

@@ -1,0 +1,6 @@
+Proximos passos para 30/10
+
+1. Inicializar com pesos aletorios
+2. Variar numero de epocas / taxa de aprendizagem
+3. Testar com menos acordes combinação de (3, 4, ..., 7)
+4. Verificar outra topologia de rede
