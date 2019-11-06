@@ -94,7 +94,7 @@ class Perceptron:
 
         for classe in classes:
             instancias = self.saida[self.saida == classe].dropna()
-            instancias_id.extend(instancias.sample(n=int(itens_por_classe)).index.to_list())
+            instancias_id.extend(instancias.sample(n=int(itens_por_classe), random_state=1).index.to_list())
 
         if len(instancias_id) < self.T:
             instancias_id.append(self.saida[~self.saida.index.isin(instancias_id)] 
