@@ -16,10 +16,8 @@ def get_params(x_train, y_train):
         {
             'activation' : ['identity', 'logistic', 'tanh', 'relu'],
             'solver' : ['lbfgs', 'sgd', 'adam'],
-            'hidden_layer_sizes': [
-             (1,),(2,),(3,),(4,),(5,),(6,),(7,),(8,),(9,),(10,),(11,), (12,),(13,),(14,),(15,),(16,),(17,),(18,),(19,),(20,),(21,)
-            ],
-            'max_iter' : [200, 500, 1000]
+            'hidden_layer_sizes': [(i+1,) for i in range(0, 100, 9)],
+            'max_iter' : [2500, 5000, 10000, 20000]
         }
        ]
     clf2 = GridSearchCV(MLPClassifier(), param_grid, cv=3,
@@ -93,15 +91,14 @@ def example_plot_learning_curve(X, y):
     plt.tight_layout()
     plt.show()
 
-def teste_mlp(niter):
+def test_all_chords_mlp(niter, max_iter, train_file, test_file):
     from sklearn.metrics import accuracy_score
-    max_it = 8000
     corretudes = []
-    csv_name = "teste_mlp.csv"
+    csv_name = "teste_mlp_niter={}_epocas={}.csv"
     real = []
     preditos = []
     for i in range(niter):
-        clf = MLPClassifier(max_iter=max_it)
+        clf = MLPClassifier(max_iter=max_iter)
         names = ["Freq1", "Freq2", "Freq3", "Freq4", "Freq5", "Freq6", "Freq7", "Freq8", "Freq9", "Classe"]
         df = pd.read_csv('TmpDataSets/acordes_ordenados.csv', names=names)
         df_train = pd.read_csv('TmpDataSets/acordes_treino.csv', names=names)
@@ -117,6 +114,9 @@ def teste_mlp(niter):
     # save_hist(filename, title, corretudes)
     print(corretudes)
 
+def test_two_chords_mlp(niter, max_iter, chord1_file, chord2_file):
+    pass
+
 def variar_parametros_mlp(param, param_range):
     names = ["Freq1", "Freq2", "Freq3", "Freq4", "Freq5", "Freq6", "Freq7", "Freq8", "Freq9", "Classe"]
     df = pd.read_csv('TmpDataSets/acordes_ordenados.csv', names=names)
@@ -131,4 +131,8 @@ def variar_parametros_mlp(param, param_range):
 # niter = 1
 # teste_mlp(niter)
 
-variar_parametros_mlp("max_iter", [200, 500, 1000, 2000, 8000, 16000, 32000, 64000])
+# variar_parametros_mlp("max_iter", [200, 500, 1000, 2000, 8000, 16000, 32000, 64000])
+names = ["Freq1", "Freq2", "Freq3", "Freq4", "Freq5", "Freq6", "Freq7", "Freq8", "Freq9", "Classe"]
+df_train = pd.read_csv('TmpDataSets/acordes_treino.csv', names=names)
+x_train, y_train = df_train[df_train.columns[:9]], df_train[df_train.columns[-1]]
+print(get_params(x_train, y_train))
