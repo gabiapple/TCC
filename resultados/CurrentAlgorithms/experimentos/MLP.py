@@ -100,18 +100,19 @@ def test_all_chords_mlp(niter, max_iter, train_file, test_file):
     for i in range(niter):
         clf = MLPClassifier(max_iter=max_iter)
         names = ["Freq1", "Freq2", "Freq3", "Freq4", "Freq5", "Freq6", "Freq7", "Freq8", "Freq9", "Classe"]
-        df = pd.read_csv('TmpDataSets/acordes_ordenados.csv', names=names)
-        df_train = pd.read_csv('TmpDataSets/acordes_treino.csv', names=names)
-        df_test = pd.read_csv('TmpDataSets/acordes_teste.csv', names=names)
+        df = pd.read_csv('NewDatasets/acordes_maiores.csv')
+        df_train = pd.read_csv('NewDatasets/acordes_treino.csv')
+        df_test = pd.read_csv('NewDatasets/acordes_teste.csv')
         X, y = df[df.columns[:9]], df[df.columns[-1]]
         x_train, y_train = df_train[df_train.columns[:9]], df_train[df_train.columns[-1]]
         x_test, y_test = df_test[df_test.columns[:9]], df_test[df_test.columns[-1]]
         clf.fit(x_train, y_train)
         y_predict = clf.predict(x_test)
+        print([coef.shape for coef in clf.coefs_])
         corretudes.append(clf.score(x_test, y_test) * 100)
-    # filename = 'teste_MLP_niter={}_epocas={}.png'.format(niter, max_it)
-    # title = r'Histograma da execução do MLP, $N={}, $epocas={}$'.format(niter, max_it)
-    # save_hist(filename, title, corretudes)
+    filename = 'teste_MLP_niter={}_epocas={}.png'.format(niter, max_iter)
+    title = r'Histograma da execução do MLP, $N={}, $epocas={}$'.format(niter, max_iter)
+    save_hist(filename, title, corretudes)
     print(corretudes)
 
 def test_two_chords_mlp(niter, max_iter, chord1_file, chord2_file):
@@ -119,12 +120,12 @@ def test_two_chords_mlp(niter, max_iter, chord1_file, chord2_file):
 
 def variar_parametros_mlp(param, param_range):
     names = ["Freq1", "Freq2", "Freq3", "Freq4", "Freq5", "Freq6", "Freq7", "Freq8", "Freq9", "Classe"]
-    df = pd.read_csv('TmpDataSets/acordes_ordenados.csv', names=names)
-    df_train = pd.read_csv('TmpDataSets/acordes_treino.csv', names=names)
-    df_test = pd.read_csv('TmpDataSets/acordes_teste.csv', names=names)
+    df = pd.read_csv('NewDatasets/acordes_maiores.csv')
+    df_train = pd.read_csv('NewDatasets/acordes_treino.csv')
+    df_test = pd.read_csv('NewDatasets/acordes_teste.csv')
     X, y = df[df.columns[:9]], df[df.columns[-1]]
-    df_train = pd.read_csv('TmpDataSets/acordes_treino.csv', names=names)
-    df_test = pd.read_csv('TmpDataSets/acordes_teste.csv', names=names)
+    df_train = pd.read_csv('NewDatasets/acordes_treino.csv')
+    df_test = pd.read_csv('NewDatasets/acordes_teste.csv')
     plot_validation_curve(X, y, param, param_range)
 
 
@@ -132,7 +133,8 @@ def variar_parametros_mlp(param, param_range):
 # teste_mlp(niter)
 
 # variar_parametros_mlp("max_iter", [200, 500, 1000, 2000, 8000, 16000, 32000, 64000])
-names = ["Freq1", "Freq2", "Freq3", "Freq4", "Freq5", "Freq6", "Freq7", "Freq8", "Freq9", "Classe"]
-df_train = pd.read_csv('TmpDataSets/acordes_treino.csv', names=names)
+# names = ["Freq1", "Freq2", "Freq3", "Freq4", "Freq5", "Freq6", "Freq7", "Freq8", "Freq9", "Classe"]
+test_all_chords_mlp(20, 2500, 'NewDatasets/acordes_treino.csv', 'NewDatasets/acordes_teste.csv')
+df_train = pd.read_csv('NewDatasets/acordes_treino.csv')
 x_train, y_train = df_train[df_train.columns[:9]], df_train[df_train.columns[-1]]
-print(get_params(x_train, y_train))
+# print(get_params(x_train, y_train))
