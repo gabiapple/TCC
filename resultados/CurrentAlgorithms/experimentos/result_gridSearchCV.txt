@@ -1,1 +1,22 @@
 {'activation': 'relu', 'hidden_layer_sizes': (55,), 'max_iter': 2500, 'solver': 'adam'}
+
+---------------------------------------------------------------------------------------------
+GridSearch com o dataset 'acordes_treino.csv'
+Info: 5 atributos scaled
+
+Params grid:
+[{'activation': ['logistic', 'tanh', 'relu'], 'solver': ['lbfgs', 'sgd', 'adam'], 'hidden_layer_sizes': [(1,), (13,), (25,), (37,), (49,), (61,), (73,), (85,), (97,)], 'max_iter': [1000, 2000, 4000, 8000]}]
+
+Best params:
+{'activation': 'logistic', 'hidden_layer_sizes': (61,), 'max_iter': 8000, 'solver': 'lbfgs'}
+
+---------------------------------------------------------------------------------------------
+GridSearch com o dataset 'acordes_treino.csv'
+Info: 5 atributos scaled
+
+Params grid:
+[{'activation': ['logistic', 'tanh', 'relu'], 'solver': ['sgd', 'adam'], 'hidden_layer_sizes': [(1,), (13,), (25,), (37,), (49,), (61,), (73,), (85,), (97,)], 'max_iter': [2000, 4000, 8000]}]
+
+Best params:
+{'activation': 'logistic', 'hidden_layer_sizes': (37,), 'max_iter': 4000, 'solver': 'adam'}
+
