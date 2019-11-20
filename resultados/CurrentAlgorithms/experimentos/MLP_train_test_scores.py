@@ -11,24 +11,24 @@ np.random.seed(1)
 
 acordes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 
-# treino = 'NewDatasets/acordes_treino.csv'
-# teste = 'NewDatasets/acordes_teste.csv'
+treino = 'NewDatasets/acordes_treino.csv'
+teste = 'NewDatasets/acordes_teste.csv'
 
-treino = 'NewDatasets/acordes_treino_sem_limitar_faixa.csv'
-teste = 'NewDatasets/acordes_teste_sem_limitar_faixa.csv'
+# treino = 'NewDatasets/acordes_treino_sem_limitar_faixa.csv'
+# teste = 'NewDatasets/acordes_teste_sem_limitar_faixa.csv'
 
 df_train = pd.read_csv(treino)
 df_test = pd.read_csv(teste)
 
-num_atributos = 9
+num_atributos = 5
 
 X_train, y_train = df_train[df_train.columns[:num_atributos]].values, df_train[df_train.columns[-1]]
 X_test, y_test = df_test[df_test.columns[:num_atributos]].values, df_test[df_test.columns[-1]]
-# from sklearn.preprocessing import StandardScaler
-# scaler = StandardScaler()
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
 
-# X_train = scaler.fit_transform(X_train)
-# X_test = scaler.fit_transform(X_test)
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.fit_transform(X_test)
 
 
 
@@ -42,7 +42,7 @@ max_score_execution = 0
 corretudes = []
 mat_confusao_list = []
 
-test_directory = 'experimento2_9attr_100neuronios'
+test_directory = 'experimento1_5attr_100neuronios_scaled'
 csv_name = "{}/teste_MLP_12acordes_{}attr_100neuronios.csv".format(test_directory, num_atributos)
    
 niter = 20

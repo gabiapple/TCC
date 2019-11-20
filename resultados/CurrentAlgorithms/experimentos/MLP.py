@@ -30,7 +30,7 @@ def plot_validation_curve(X,y, param, param_range):
     # Reference: https://scikit-learn.org/stable/auto_examples/model_selection/plot_learning_curve.html
     from sklearn.model_selection import validation_curve
 
-    train_scores, test_scores = validation_curve(MLPClassifier(), X, y, param,
+    train_scores, test_scores = validation_curve(MLPClassifier(max_iter=5000), X, y, param,
                                                param_range,
                                                cv=3)
     train_scores_mean = np.mean(train_scores, axis=1)
@@ -38,17 +38,18 @@ def plot_validation_curve(X,y, param, param_range):
     test_scores_mean = np.mean(test_scores, axis=1)
     test_scores_std = np.std(test_scores, axis=1)
     title = "MPL"
-    plt.title("Validation Curve with MPL")
-    plt.xlabel(r"${}$".format(param))
-    plt.ylabel("Score")
+    plt.title("Curva de Validação do MLP")
+    plt.xlabel("Neurônios na camada escondida")
+    #plt.xlabel(r"${}$".format(param))
+    plt.ylabel("Acurácia")
     plt.ylim(0.0, 1.1)
     lw = 2
-    plt.plot(param_range, train_scores_mean, label="Training score",
+    plt.plot(param_range, train_scores_mean, label="Treino",
                 color="darkorange", lw=lw)
     # plt.fill_between(param_range, train_scores_mean - train_scores_std,
     #                 train_scores_mean + train_scores_std, alpha=0.2,
     #                 color="darkorange", lw=lw)
-    plt.plot(param_range, test_scores_mean, label="Cross-validation score",
+    plt.plot(param_range, test_scores_mean, label="Validação cruzada",
                 color="navy", lw=lw)
     # plt.fill_between(param_range, test_scores_mean - test_scores_std,
     #                 test_scores_mean + test_scores_std, alpha=0.2,
@@ -121,10 +122,10 @@ def test_two_chords_mlp(niter, max_iter, chord1_file, chord2_file):
 
 def variar_parametros_mlp(param, param_range):
     names = ["Freq1", "Freq2", "Freq3", "Freq4", "Freq5", "Freq6", "Freq7", "Freq8", "Freq9", "Classe"]
-    df = pd.read_csv('NewDatasets/acordes_maiores.csv')
-    df_train = pd.read_csv('NewDatasets/acordes_treino.csv')
-    df_test = pd.read_csv('NewDatasets/acordes_teste.csv')
-    X, y = df[df.columns[:5]], df[df.columns[-1]]
+    df = pd.read_csv('NewDatasets/acordes_maiores_sem_limitar_faixa.csv')
+    df_train = pd.read_csv('NewDatasets/acordes_treino_sem_limitar_faixa.csv')
+    df_test = pd.read_csv('NewDatasets/acordes_teste_sem_limitar_faixa.csv')
+    X, y = df[df.columns[:9]], df[df.columns[-1]]
     scaler = StandardScaler()
     x_scaled = scaler.fit_transform(X)
     plot_validation_curve(x_scaled, y, param, param_range)
@@ -134,16 +135,16 @@ def main():
     # niter = 1
     # teste_mlp(niter)
 
-    #variar_parametros_mlp("hidden_layer_sizes", [x for x in range(10, 110, 10)]) 
-    # variar_parametros_mlp("max_iter", [x for x in range(1000, 2200, 200)])
+    variar_parametros_mlp("hidden_layer_sizes", [x for x in range(10, 110, 10)]) 
+    # variar_parametros_mlp("max_iter", [x for x in range(500, 5500, 500)])
     # variar_parametros_mlp("max_iter", [200, 500, 1000, 2000, 8000, 16000, 32000, 64000])
     # names = ["Freq1", "Freq2", "Freq3", "Freq4", "Freq5", "Freq6", "Freq7", "Freq8", "Freq9", "Classe"]
     #test_all_chords_mlp(20, 2500, 'NewDatasets/acordes_treino.csv', 'NewDatasets/acordes_teste.csv')
-    df_train = pd.read_csv('NewDatasets/acordes_maiores.csv')
-    x_train, y_train = df_train[df_train.columns[:5]], df_train[df_train.columns[-1]]
-    scaler = StandardScaler()
-    x_train_scaled = scaler.fit_transform(x_train)
-    example_plot_learning_curve(x_train_scaled, y_train)
+    # df_train = pd.read_csv('NewDatasets/acordes_maiores.csv')
+    # x_train, y_train = df_train[df_train.columns[:5]], df_train[df_train.columns[-1]]
+    # scaler = StandardScaler()
+    # x_train_scaled = scaler.fit_transform(x_train)
+    # example_plot_learning_curve(x_train_scaled, y_train)
     #print(df_train)
 
     #print(y_train)
