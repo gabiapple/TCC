@@ -22,12 +22,15 @@ df_test = pd.read_csv(teste)
 
 num_atributos = 9
 
-x_train, y_train = df_train[df_train.columns[:num_atributos]], df_train[df_train.columns[-1]]
-x_test, y_test = df_test[df_test.columns[:num_atributos]], df_test[df_test.columns[-1]]
-from sklearn.preprocessing import StandardScaler
-scaler = StandardScaler()
-X_train = scaler.fit_transform(x_train)
-X_test = scaler.fit_transform(x_test)
+X_train, y_train = df_train[df_train.columns[:num_atributos]].values, df_train[df_train.columns[-1]]
+X_test, y_test = df_test[df_test.columns[:num_atributos]].values, df_test[df_test.columns[-1]]
+# from sklearn.preprocessing import StandardScaler
+# scaler = StandardScaler()
+
+# X_train = scaler.fit_transform(X_train)
+# X_test = scaler.fit_transform(X_test)
+
+
 
 """ Home-made mini-batch learning
     -> not to be used in out-of-core setting!
@@ -39,12 +42,13 @@ max_score_execution = 0
 corretudes = []
 mat_confusao_list = []
 
-# csv_name = "teste_MLP_12acordes_5attr_100neuronios.csv"
+test_directory = 'experimento2_9attr_100neuronios'
+csv_name = "{}/teste_MLP_12acordes_{}attr_100neuronios.csv".format(test_directory, num_atributos)
    
 niter = 20
 
 for i in range(niter):
-    mlp = MLPClassifier(hidden_layer_sizes=(100,), max_iter=10, alpha=1e-4,
+    mlp = MLPClassifier(hidden_layer_sizes=(100,), max_iter=1, alpha=1e-4,
                     solver='adam', verbose=True, tol=1e-4, random_state=i)
     N_TRAIN_SAMPLES = X_train.shape[0]
     N_EPOCHS = 2000
@@ -78,6 +82,9 @@ for i in range(niter):
         score_test = mlp.score(X_test, y_test)
         scores_test.append(score_test)
 
+        if mlp._no_improvement_count > mlp.n_iter_no_change:
+            break
+
         epoch += 1
     if score_test > max_score:
         max_score = score_test
@@ -90,49 +97,58 @@ for i in range(niter):
 
     corretude = score_test * 100
     corretudes.append(corretude)
-    # write_csv(csv_name, [["iter", i]])
-    # write_csv(csv_name, [acordes])
-    # write_csv(csv_name, mat_confusao)
-    # write_csv(csv_name, [["Corretude", str(corretude)]])
-    # write_csv(csv_name, [["Relatorio classificador"]])
+    write_csv(csv_name, [["iter", i]])
+    write_csv(csv_name, [acordes])
+    write_csv(csv_name, mat_confusao)
+    write_csv(csv_name, [["Corretude", str(corretude)]])
+    write_csv(csv_name, [["Relatorio classificador"]])
 
-    # report = classification_report(y_test, y_predict, output_dict=True)
+    report = classification_report(y_test, y_predict, output_dict=True)
 
-    # df_report = pd.DataFrame(report).transpose()
-    # with open(csv_name, 'a') as f:
-    #     df_report.to_csv(f)
+    df_report = pd.DataFrame(report).transpose()
+    with open(csv_name, 'a') as f:
+        df_report.to_csv(f)
     
 
     """ Plot train_test"""
     mlps.append(mlp)
-    # plt.figure()
-    # plt.plot(scores_train[:mlp.n_iter_], color='green', alpha=0.8, label='Treino')
-    # plt.plot(scores_test[:mlp.n_iter_], color='magenta', alpha=0.8, label='Teste')
-    # plt.title("Acurácia ao longo das épocas", fontsize=14)
-    # plt.xlabel('Épocas')
-    # plt.legend(loc='upper left')
-    # # plt.show()
-    # plt.savefig('acuracia_treino_teste_execucao{}'.format(i))
     plt.figure()
-    plt.title("Função de perda ao longo das épocas", fontsize=14)
+    plt.plot(scores_train, color='green', alpha=0.8, label='Treino')
+    plt.plot(scores_test, color='magenta', alpha=0.8, label='Teste')
+    plt.title("Acurácia ao longo das épocas", fontsize=14)
     plt.xlabel('Épocas')
-    plt.plot(mlp.loss_curve_)
-    plt.savefig('funcao_perda_execucao{}_9attr'.format(i))
+    plt.legend(loc='upper left')
+    # plt.show()
+    plt.savefig('{}/acuracia_treino_teste_execucao{}'.format(test_directory, i))
+    # plt.figure()
+    # plt.title("Função de perda ao longo das épocas", fontsize=14)
+    # plt.xlabel('Épocas')
+    # plt.plot(mlp.loss_curve_)
+    # plt.show()
+    # plt.savefig('funcao_perda_execucao{}_9attr'.format(i))
 
-# total_mat_confusao = np.asarray(mat_confusao_list).sum(axis=0)
-# write_csv(csv_name, [["MATRIZ DE CONFUSAO ACUMULADA"], str(niter)])
-# write_csv(csv_name, total_mat_confusao)
-# info = '12chords'
-# generate_histogram_per_chord(acordes, total_mat_confusao, niter, N_EPOCHS, info)
-# filename = 'teste_MLP_scaled_{}.png'.format('_'.join(info.split()))
-# title = r'Execução {} vezes do modelo $maxEpocas={}'.format(niter, N_EPOCHS)
-# save_hist(filename, title, corretudes)
-# write_csv(csv_name, [["Melhor execução: {}".format(max_score_execution)]])
-# write_csv(csv_name, [["DADOS DO MODELO"]])
-# write_csv(csv_name, [["epoca que convergiu", mlps[max_score_execution].n_iter_]])
+total_mat_confusao = np.asarray(mat_confusao_list).sum(axis=0)
+write_csv(csv_name, [["MATRIZ DE CONFUSAO ACUMULADA"], str(niter)])
+write_csv(csv_name, total_mat_confusao)
+info = '12 chords {} attr'.format(num_atributos)
+n_iter_list = [mlp.n_iter_ for mlp in mlps]
+mean_n_iter = int(np.mean(n_iter_list))
+generate_histogram_per_chord(acordes, total_mat_confusao, niter, mean_n_iter, info)
+filename = '{}/teste_MLP_{}.png'.format(test_directory, '_'.join(info.split()))
+title = r'Execução {} vezes do modelo $maxEpocas={}'.format(niter, N_EPOCHS)
+save_hist(filename, title, corretudes)
+write_csv(csv_name, [["Melhor execução: {}".format(max_score_execution)]])
+write_csv(csv_name, [["DADOS DO MODELO"]])
+write_csv(csv_name, [["epoca que convergiu", mlps[max_score_execution].n_iter_]])
 # write_csv(csv_name, [["Coefs"]])
 # write_csv(csv_name, mlps[max_score_execution].coefs_)
 # write_csv(csv_name, [["Intercepts"]])
 # write_csv(csv_name, mlps[max_score_execution].intercepts_)
+# Monta tabela de acuracias
+write_csv(csv_name, [["Tabela de acuracias - latex format"]])
+tabela_acuracias = []
+for i, corretude in enumerate(corretudes):
+    name = "#" + str(i)
+    tabela_acuracias.append(["\#" + str(i) + " & {} //".format(str(round(corretude, 2)))])
 
-    
+write_csv(csv_name, tabela_acuracias)
